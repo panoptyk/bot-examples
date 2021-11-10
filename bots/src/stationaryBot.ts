@@ -1,12 +1,13 @@
 import { ClientAPI } from "@panoptyk/client";
-import { Room, Faction, Agent, Util } from "@panoptyk/core";
+import { Room, Faction, Agent, Util, RoomManipulator } from "@panoptyk/core";
 import { FactionManipulator } from "@panoptyk/core";
+import { info } from "console";
 
 // Usage: npx ts-node botTemplate.ts <username> <password> <server_ip>
 
 // #region Boilerplate_setup
 // Boilerplate agent code ================================================== START
-const username = process.argv[2] ? process.argv[2] : "idle";
+const username = process.argv[2] ? process.argv[2] : "stationaryBot";
 const password = process.argv[3] ? process.argv[3] : "password";
 const address = process.argv[4] ? process.argv[4] : "http://localhost:8080";
 
@@ -15,33 +16,42 @@ const RETRY_INTERVAL = 100; // ms before attempLogin() is called again to retry 
 const ACT_INTERVAL = 2000; // ms before act() is called again(possibly)
 const logger = Util.logger; // Alias logger
 
+let curKnowledgeIdx = 0;
+
 function init() {
     console.log("Logging in as: " + username + " to server: " + address);
     logger.silence();
-    address ? ClientAPI.init(address) : ClientAPI.init();
+    address ? ClientAPI.init(address, 1) : ClientAPI.init();
     attemptLogin();
-
 }
 
-function initializeFaction() {
-    const player: Agent = ClientAPI.playerAgent;
-    const factionA = new Faction("A", "");
-
-    FactionManipulator.addAgentToFaction(factionA, player);
-    
-}
-
-function playerMoveToRoom() {
+function moveToRoom1() {
     const rooms: Room[] = ClientAPI.playerAgent.room.adjacentRooms;
-    const roomSelected = rooms[getRandomInt(rooms.length)];
+    const roomSelected = rooms[0];
 
-    setTimeout(() => {
-        ClientAPI.moveToRoom(roomSelected);
-    }, 2000);
+    setTimeout(async () => {
+        await ClientAPI.moveToRoom(roomSelected)
+            .then(res => console.log(
+                `move to room: ${roomSelected}`
+            ))
+            .catch(error => console.log(`failed to move to room: ${roomSelected} with error msg: ${JSON.stringify(error)}`));  
+    }, 1000);
 }
 
-function getRandomInt(max) {
-    return Math.floor(Math.random() * max);
+function tellObservation() {
+    setTimeout(() => {
+        // tell knowledge
+
+        let infos = ClientAPI.playerAgent.knowledge;
+        
+        const infoSelected = infos.slice(curKnowledgeIdx);
+        
+        infoSelected.forEach((info) => console.log(info.getTerms(false)));
+        
+        curKnowledgeIdx = infos.length; 
+
+        console.log(`seen agents: ${ClientAPI.seenAgents}`);
+    }, 2000);
 }
 
 let _retries = 1;
@@ -58,9 +68,16 @@ function attemptLogin() {
         .then((res) => {
             console.log("Logged in!");
 
-            initializeFaction();
             // tslint:disable-next-line: ban
             setTimeout(actWrapper, 100);
+            
+            ClientAPI.addOnUpdateListener((updates) => {
+                console.log(`---------updates--------------\n${JSON.stringify(updates)}`);
+                console.log(`-------------info update--------------${updates.Information}`);
+            });
+            
+            moveToRoom1();
+
         });
 }
 
@@ -87,9 +104,7 @@ function actWrapper() {
 // set "_endBot" to true to exit the script cleanly
 
 async function act() {
-    playerMoveToRoom();
-
-    // await doSomething();
+    tellObservation();
 }
 
 // =======Start Bot========== //

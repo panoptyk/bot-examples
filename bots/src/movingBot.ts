@@ -1,12 +1,12 @@
 import { ClientAPI } from "@panoptyk/client";
-import { Room, Faction, Agent, Util } from "@panoptyk/core";
+import { Room, Faction, Agent, Util, RoomManipulator } from "@panoptyk/core";
 import { FactionManipulator } from "@panoptyk/core";
 
 // Usage: npx ts-node botTemplate.ts <username> <password> <server_ip>
 
 // #region Boilerplate_setup
 // Boilerplate agent code ================================================== START
-const username = process.argv[2] ? process.argv[2] : "idle";
+const username = process.argv[2] ? process.argv[2] : "movingBot";
 const password = process.argv[3] ? process.argv[3] : "password";
 const address = process.argv[4] ? process.argv[4] : "http://localhost:8080";
 
@@ -18,25 +18,23 @@ const logger = Util.logger; // Alias logger
 function init() {
     console.log("Logging in as: " + username + " to server: " + address);
     logger.silence();
-    address ? ClientAPI.init(address) : ClientAPI.init();
+    address ? ClientAPI.init(address, 1) : ClientAPI.init();
     attemptLogin();
-
 }
 
-function initializeFaction() {
-    const player: Agent = ClientAPI.playerAgent;
-    const factionA = new Faction("A", "");
-
-    FactionManipulator.addAgentToFaction(factionA, player);
-    
-}
-
-function playerMoveToRoom() {
+function moveToRandomRoom() {
     const rooms: Room[] = ClientAPI.playerAgent.room.adjacentRooms;
     const roomSelected = rooms[getRandomInt(rooms.length)];
 
-    setTimeout(() => {
-        ClientAPI.moveToRoom(roomSelected);
+    console.log(`seen rooms: ${ClientAPI.seenRooms}`);
+    
+
+    setTimeout(async () => {
+        await ClientAPI.moveToRoom(roomSelected)
+            .then(res => console.log(
+                `move to room: ${roomSelected} successfully`
+            ))
+            .catch(error => console.log(`failed to move to room: ${roomSelected} with error msg: ${JSON.stringify(error)}`));  
     }, 2000);
 }
 
@@ -58,9 +56,13 @@ function attemptLogin() {
         .then((res) => {
             console.log("Logged in!");
 
-            initializeFaction();
             // tslint:disable-next-line: ban
             setTimeout(actWrapper, 100);
+
+            ClientAPI.addOnUpdateListener((updates) => {
+                console.log(`---------updates--------------\n${JSON.stringify(updates)}`);
+            //    updates.Information.forEach(info => console.log(info));
+            });
         });
 }
 
@@ -87,9 +89,7 @@ function actWrapper() {
 // set "_endBot" to true to exit the script cleanly
 
 async function act() {
-    playerMoveToRoom();
-
-    // await doSomething();
+    moveToRandomRoom();
 }
 
 // =======Start Bot========== //
