@@ -4,13 +4,15 @@ import {
     Room,
     Item,
     Info,
+    Faction,
     RoomManipulator,
     Actions,
+    FactionManipulator,
 } from "@panoptyk/core";
 import { MemorySaveLoadDatabase } from "@panoptyk/server";
 
-Util.inject.db = new MemorySaveLoadDatabase();
-const db = Util.inject.db;
+Util.AppContext.db = new MemorySaveLoadDatabase();
+const db = Util.AppContext.db;
 
 const r1 = new Room("town square", 10);
 const r2 = new Room("north area", 10);
@@ -28,19 +30,19 @@ RoomManipulator.connectRooms(r2, r5);
 RoomManipulator.connectRooms(r3, r4);
 RoomManipulator.connectRooms(r3, r5);
 
-const i1 = new Item("thesis", "document", 1, r1);
-const i2 = new Item("essay", "document", 1, r3);
+// initialize faction
+const factionA = new Faction("A", "");
+const factionB = new Faction("B", "");
 
-const a1 = new Agent("Phil", r1);
+const a1 = new Agent("A1", r1);
+const b1 = new Agent("B1", r1);
 
-const info = Actions.pickedup(
-    { agent: a1, item: i1, room: i1.room, time: 123 },
-    a1
-);
+FactionManipulator.addAgentToFaction(factionA, a1);
+FactionManipulator.addAgentToFaction(factionB, b1);
 
 db.save().finally(() => {
     console.log("save complete");
     const otherDB = new MemorySaveLoadDatabase();
-    Util.inject.db = otherDB;
+    Util.AppContext.db = otherDB;
     otherDB.load().finally(() => {});
 });

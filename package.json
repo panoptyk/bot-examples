@@ -11,7 +11,11 @@
     "server:clean": "rm -rf server/lib",
     "server:build": "cd server/ && tsc --project tsconfig.build.json && cd -",
     "build": "npm run bots:build && npm run server:build",
-    "clean": "npm run bots:clean && npm run server:clean"
+    "clean": "npm run bots:clean && npm run server:clean",
+    "link": "npm link @panoptyk/core && npm link @panoptyk/client && npm link @panoptyk/server",
+    "init": "cd server/ && npx ts-node src/makeGame.ts && cd -",
+    "bot1": "npx ts-node bots/src/stationaryBot.ts",
+    "bot2": "npx ts-node bots/src/movingBot.ts"
   },
   "repository": {
     "type": "git",
