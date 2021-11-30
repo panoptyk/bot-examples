@@ -1,7 +1,5 @@
 import { ClientAPI } from "@panoptyk/client";
 import { Room, Faction, Agent, Util } from "@panoptyk/core";
-import { FactionManipulator } from "@panoptyk/core";
-
 // Usage: npx ts-node botTemplate.ts <username> <password> <server_ip>
 
 // #region Boilerplate_setup
@@ -23,27 +21,6 @@ function init() {
 
 }
 
-function initializeFaction() {
-    const player: Agent = ClientAPI.playerAgent;
-    const factionA = new Faction("A", "");
-
-    FactionManipulator.addAgentToFaction(factionA, player);
-    
-}
-
-function playerMoveToRoom() {
-    const rooms: Room[] = ClientAPI.playerAgent.room.adjacentRooms;
-    const roomSelected = rooms[getRandomInt(rooms.length)];
-
-    setTimeout(() => {
-        ClientAPI.moveToRoom(roomSelected);
-    }, 2000);
-}
-
-function getRandomInt(max) {
-    return Math.floor(Math.random() * max);
-}
-
 let _retries = 1;
 function attemptLogin() {
     ClientAPI.login(username, password)
@@ -58,7 +35,6 @@ function attemptLogin() {
         .then((res) => {
             console.log("Logged in!");
 
-            initializeFaction();
             // tslint:disable-next-line: ban
             setTimeout(actWrapper, 100);
         });
@@ -87,8 +63,6 @@ function actWrapper() {
 // set "_endBot" to true to exit the script cleanly
 
 async function act() {
-    playerMoveToRoom();
-
     // await doSomething();
 }
 
