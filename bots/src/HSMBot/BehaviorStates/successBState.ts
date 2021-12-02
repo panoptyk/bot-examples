@@ -1,7 +1,7 @@
 import { BehaviorState } from "./behaviorState";
 
 /**
- * SuccessBehavior is an endcap for FSMs denoting it has completed in success.
+ * SuccessBehavior is an endcap for Behavior FSMs denoting it has completed in success.
  * It's singleton SuccessBehavior.instance can be used to save memory if no modifications required
  */
 export class SuccessBehavior extends BehaviorState {
