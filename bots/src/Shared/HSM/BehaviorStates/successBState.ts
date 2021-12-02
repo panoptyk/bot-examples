@@ -16,6 +16,7 @@ export class SuccessBehavior extends BehaviorState {
 
     private constructor() {
         super();
+        this._success = true;
     }
     //#endregion
 

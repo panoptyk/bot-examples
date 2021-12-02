@@ -16,6 +16,7 @@ export class SuccessAction extends ActionState {
 
     private constructor() {
         super();
+        this._success = true;
     }
     //#endregion
 

@@ -7,6 +7,9 @@ export abstract class State {
     public get deltaTime() {
         return this._deltaTime;
     }
+    get complete(): boolean {
+        return this._success || this._fail;
+    }
     //#endregion
 
     //#region Fields
@@ -14,10 +17,7 @@ export abstract class State {
     private _thisTickTime = 0;
     private _deltaTime = 0;
     _success = false;
-    _fail = false;
-    get _complete(): boolean {
-        return this._success || this._fail;
-    }
+    _fail = false;    
     //#endregion
 
     constructor(nextState: () => State = undefined) {

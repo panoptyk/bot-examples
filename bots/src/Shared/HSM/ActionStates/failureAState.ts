@@ -14,8 +14,9 @@ export class FailureAction extends ActionState {
         return FailureAction._instance;
     }
 
-    private constructor() {
+    private constructor() {        
         super();
+        this._fail = true;
     }
     //#endregion
 

@@ -16,6 +16,7 @@ export class FailureBehavior extends BehaviorState {
 
     private constructor() {
         super();
+        this._fail = true;
     }
     //#endregion
 
