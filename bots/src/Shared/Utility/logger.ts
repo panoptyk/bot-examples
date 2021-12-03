@@ -31,6 +31,14 @@ class Logger {
     info (message: string, type: LOGTYPE) {
         console.log(`[${new Date()}]═${type} ${message}`);
     }
+
+    warn (message: string, type: LOGTYPE) {
+        console.log(`[${new Date()}]═${type} ${message}`);
+    }
+
+    error (message: string, type: LOGTYPE) {
+        console.log(`[${new Date()}]═${type} ${message}`);
+    }
 }
   
 const log = Logger.instance;
