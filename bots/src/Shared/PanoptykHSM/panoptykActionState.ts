@@ -8,7 +8,7 @@ import {
 import { log, LOGTYPE } from "../Utility";
 
 export class PanoptykActionState extends RetryActionState {
-    _action: () => ValidationResult;
+    _action: () => Promise<ValidationResult>;
     /**
      * This extension of ActionState automatically fails after a certain amount of time has passed
      * @param timeOut time till action fails in milliseconds
@@ -17,7 +17,7 @@ export class PanoptykActionState extends RetryActionState {
      */
     constructor(
         timeOut = 0,
-        action: () => ValidationResult,
+        action: () => Promise<ValidationResult>,
         nextState?: () => ActionState
     ) {
         super(timeOut, nextState);

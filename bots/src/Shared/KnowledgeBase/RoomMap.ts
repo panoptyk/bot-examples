@@ -15,12 +15,12 @@ class RoomMap {
     //#endregion
 
     private nodes: Set<Room> = new Set<Room>();
-    private edges: Map<Room, Room[]> = new Map<Room, Room[]>();
+    private edges: Map<Room, Set<Room>> = new Map<Room, Set<Room>>();
 
     public addRoom(room: Room): void {
         this.nodes.add(room);
         if (!this.edges.has(room)) {
-            this.edges.set(room, []);
+            this.edges.set(room, new Set());
         }
     }
 
@@ -30,14 +30,12 @@ class RoomMap {
         }
 
         if (this.edges.has(room1)) {
-            this.edges.get(room1).push(room2);
-        } else {
-            this.edges.set(room1, [room2]);
+            this.edges.get(room1).add(room2);
         }
     }
 
     public checkForUnexploredRooms(): Room[] {
-        return [...this.nodes].filter((x) => !(this.edges.get(x).length > 0));
+        return [...this.nodes].filter((x) => this.edges.get(x).size <= 0);
     }
 
     public findDisconnectedGraphs(): Room[] {
