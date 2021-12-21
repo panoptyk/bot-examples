@@ -1,5 +1,5 @@
 import { ClientAPI } from "@panoptyk/client";
-import { Info, Room } from "@panoptyk/core";
+import { Info, Room, Agent } from "@panoptyk/core";
 
 // TODO: needs a new name
 class KnowledgeBase {
@@ -15,6 +15,14 @@ class KnowledgeBase {
 
     public isConversationRequested(): boolean {
         return ClientAPI.playerAgent.conversationRequesters.length > 0;
+    }
+
+    public isAgentInConversation(agent: Agent): boolean {
+        return ClientAPI.playerAgent.conversation.containsAgent(agent);
+    }
+
+    public isAgentInRoom(agent: Agent): boolean {
+        return ClientAPI.playerAgent.room.hasAgent(agent);
     }
 }
 
