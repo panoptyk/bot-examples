@@ -1,26 +1,27 @@
-import { RetryActionState } from "../../Shared/HSM/ActionStates/retryActionState";
-import { ActionState, SuccessAction, FailureAction } from "../../Shared/HSM";
-import { log, LOGTYPE } from "../../Shared/Utility";
 import { ClientAPI } from "@panoptyk/client";
+import { Room } from "@panoptyk/core";
+import { ActionState, SuccessAction, FailureAction } from "../../Shared/HSM";
+import { RetryActionState } from "../../Shared/HSM/ActionStates/retryActionState";
+import { log, LOGTYPE } from "../../Shared/Utility";
 
-export class AskQuestionAction extends RetryActionState {
-    _terms: any;
-    _action: string;
+export class MoveToRoomAction extends RetryActionState {
+    _dest: Room;
 
-    constructor(question: any, action: string, timeout: number, nextState?:() => ActionState) {
+    constructor(dest: Room, timeout: number, nextState?: () => ActionState) {
         super(timeout, nextState);
-        this._terms = question;
-        this._fail = !question;
+
+        this._dest = dest;
     }
 
     async act() {
-        await ClientAPI.askQuestion(this._terms, this._action)
+        await ClientAPI.moveToRoom(this._dest)
             .then(res => {
-                log.info(`Agent ${ClientAPI.playerAgent} asked a question ${this._terms}`, LOGTYPE.ACT);
+                log.info(`Agent ${ClientAPI.playerAgent} moved to room ${this._dest}`, LOGTYPE.ACT);
+                this._success = true;
             })
             .catch(error => {
                 console.log(JSON.stringify(error));
-            });;
+            });
     }
 
     public nextState(): ActionState {

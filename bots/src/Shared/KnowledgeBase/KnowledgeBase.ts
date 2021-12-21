@@ -1,5 +1,5 @@
 import { ClientAPI } from "@panoptyk/client";
-import { Info, Room, Agent } from "@panoptyk/core";
+import { Info, Room, Agent, Quest } from "@panoptyk/core";
 
 // TODO: needs a new name
 class KnowledgeBase {
@@ -23,6 +23,10 @@ class KnowledgeBase {
 
     public isAgentInRoom(agent: Agent): boolean {
         return ClientAPI.playerAgent.room.hasAgent(agent);
+    }
+
+    public isQuestCompleted(quest: Quest): boolean {
+        return ClientAPI.playerAgent.activeAssignedQuests.length === 0 || ClientAPI.playerAgent.activeAssignedQuests[0].id !== quest.id;
     }
 }
 
