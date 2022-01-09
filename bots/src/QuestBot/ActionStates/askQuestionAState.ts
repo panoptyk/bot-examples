@@ -20,7 +20,7 @@ export class AskQuestionAction extends RetryActionState {
             })
             .catch(error => {
                 console.log(JSON.stringify(error));
-            });;
+            });
     }
 
     public nextState(): ActionState {
