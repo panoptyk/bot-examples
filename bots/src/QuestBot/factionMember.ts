@@ -1,5 +1,7 @@
 import { ClientAPI } from "@panoptyk/client";
-import { Room, Faction, Agent, Util } from "@panoptyk/core";
+import { Room, Faction, Agent, Util, Quest } from "@panoptyk/core";
+import { defaultKB as KB, roomMap } from "../Shared/KnowledgeBase";
+import { QuestStrategy } from "./Strategy/questStrategy";
 // Usage: npx ts-node botTemplate.ts <username> <password> <server_ip>
 
 // #region Boilerplate_setup
@@ -13,10 +15,33 @@ const RETRY_INTERVAL = 100; // ms before attempLogin() is called again to retry 
 const ACT_INTERVAL = 2000; // ms before act() is called again(possibly)
 const logger = Util.logger; // Alias logger
 
+const roomsAdded = new Set();
+
 function init() {
     console.log("Logging in as: " + username + " to server: " + address);
     logger.silence();
     address ? ClientAPI.init(address) : ClientAPI.init();
+
+    ClientAPI.addOnUpdateListener((updates) => {
+        updates.Information.forEach(info => {
+            KB.collectInfo(info);
+        });
+
+        const curRoom = ClientAPI.playerAgent.room;
+        if (curRoom && !roomsAdded.has(curRoom)) {
+            roomsAdded.add(curRoom);
+            roomMap.addRoom(curRoom);
+            curRoom.adjacentRooms.forEach(neighbor => {
+                roomMap.addRoom(neighbor);
+                roomMap.addConnection(curRoom, neighbor);
+            });
+        }
+
+        updates.Agent.forEach(agent => {
+            KB.updateAgentMap(agent);
+        });
+    });
+
     attemptLogin();
 
 }
@@ -62,8 +87,12 @@ function actWrapper() {
 // #endregion
 // set "_endBot" to true to exit the script cleanly
 
+let questBot: QuestStrategy = new QuestStrategy();
+
 async function act() {
-    // await doSomething();
+    if (ClientAPI.canAct()) {
+        await questBot.act();
+    }
 }
 
 // =======Start Bot========== //

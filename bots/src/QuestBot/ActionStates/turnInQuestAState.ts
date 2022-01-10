@@ -3,14 +3,14 @@ import { RetryActionState } from "../../Shared/HSM/ActionStates/retryActionState
 import { Quest, Info } from "@panoptyk/core";
 import { defaultKB as KB } from "../../Shared/KnowledgeBase";
 import { log, LOGTYPE } from "../../Shared/Utility";
-import { ClientAPI } from "@panoptyk/../panoptyk-engine/packages/client/src";
+import { ClientAPI } from "@panoptyk/client";
 
 export class TurnInQuestAction extends RetryActionState {
     _quest: Quest;
     _info: Info;
 
     constructor(quest: Quest, info: Info, timeout: number, nextState?: () => ActionState) {
-        super(timeout,nextState);
+        super(timeout, nextState);
 
         this._quest = quest;
         this._info = info;
