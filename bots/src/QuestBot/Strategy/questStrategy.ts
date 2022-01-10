@@ -14,8 +14,6 @@ export class QuestStrategy extends Strategy {
     }
 
     async act() {
-        await super.act();
-
         if (this.currentBehavior === IdleBState.instance) {
             let room: Room;
 
@@ -31,6 +29,8 @@ export class QuestStrategy extends Strategy {
                 QuestStrategy.moveToRoomTransition(this)
             );
         }
+        
+        await super.act();
     }
 
     static moveToRoomTransition(

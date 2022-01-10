@@ -9,6 +9,7 @@ import {
 import { JoinConversationAction } from "../ActionStates/joinConversationAState";
 import { defaultKB as KB } from "../../Shared/KnowledgeBase";
 import { LeaveConversationAction } from "../ActionStates/leaveConversationAState";
+import { log, LOGTYPE } from "../../Shared/Utility";
 
 export class GetQuestBState extends BehaviorState {
 
@@ -43,10 +44,15 @@ export class GetQuestBState extends BehaviorState {
     }
 
     async act() {
-        await super.act();
-
+        log.info(
+            `[${this.constructor.name}] CurrentActionState: ${this.currentActionState.constructor.name}`,
+            LOGTYPE.STATE
+        );
+        
         this._success = KB.isQuestAvailable();
         this._fail = this.currentActionState === FailureAction.instance;
+        
+        await super.act();
     }
 
     static JoinConversationTransition(

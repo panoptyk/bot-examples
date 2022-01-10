@@ -1,4 +1,5 @@
 import { BehaviorState, SuccessAction } from "../../Shared/HSM";
+import { log, LOGTYPE } from "../../Shared/Utility";
 
 export class IdleBState extends BehaviorState {
     constructor(nextState?: () => BehaviorState) {
@@ -20,5 +21,9 @@ export class IdleBState extends BehaviorState {
 
     async act() {
         // idle
+        log.info(
+            `[${this.constructor.name}] CurrentActionState: ${this.currentActionState.constructor.name}`,
+            LOGTYPE.STATE
+        );
     }
 }

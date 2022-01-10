@@ -20,7 +20,7 @@ export class MoveToRoomAction extends RetryActionState {
                 this._success = true;
             })
             .catch(error => {
-                console.log(JSON.stringify(error));
+                console.log(`error moving to room ${this._dest}\n: ${JSON.stringify(error)}`);
             });
     }
 

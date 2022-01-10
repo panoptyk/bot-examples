@@ -19,7 +19,7 @@ export class AskQuestionAction extends RetryActionState {
                 log.info(`Agent ${ClientAPI.playerAgent} asked a question ${this._terms}`, LOGTYPE.ACT);
             })
             .catch(error => {
-                console.log(JSON.stringify(error));
+                console.log(`error asking question:\n ${JSON.stringify(error)}`);
             });
     }
 

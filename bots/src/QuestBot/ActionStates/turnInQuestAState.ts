@@ -26,7 +26,7 @@ export class TurnInQuestAction extends RetryActionState {
                 log.info(`Agent ${ClientAPI.playerAgent} turn in info ${this._info} for quest ${this._quest}`, LOGTYPE.ACT);
             })
             .catch(error => {
-                console.log(JSON.stringify(error));
+                console.log(`error turning in quest:\n ${JSON.stringify(error)}`);
             });;
     }
 

@@ -63,6 +63,7 @@ function actWrapper() {
 // set "_endBot" to true to exit the script cleanly
 
 async function act() {
+    console.log(ClientAPI.playerAgent.room);
     if (ClientAPI.playerAgent.conversation) {
         console.log("assigning quest");
         // assign quest 

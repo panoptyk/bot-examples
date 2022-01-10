@@ -22,17 +22,17 @@ export class JoinConversationAction extends RetryActionState {
             this._fail ||
             !KB.isAgentInRoom(this._target) ||
             !this._target.conversation;
-        
-            if (!this.complete && !this._requested) {
-                await ClientAPI.requestConversation(this._target)
-                    .then(res => {
-                        log.info(`Agent ${ClientAPI.playerAgent} requested conversation with agent ${this._target}`, LOGTYPE.ACT);
-                        this._requested = true;
-                    })
-                    .catch(error => {
-                        console.log(JSON.stringify(error));
-                    });
-            }
+
+        if (!this._requested) {
+            await ClientAPI.requestConversation(this._target)
+                .then(res => {
+                    log.info(`Agent ${ClientAPI.playerAgent} requested conversation with agent ${this._target}`, LOGTYPE.ACT);
+                    this._requested = true;
+                })
+                .catch(error => {
+                    console.log(`error joining conversation:\n ${JSON.stringify(error)}`);
+                });
+        }
     }
 
     public nextState(): ActionState {

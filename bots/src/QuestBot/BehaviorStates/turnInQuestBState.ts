@@ -11,6 +11,7 @@ import { JoinConversationAction } from "../ActionStates/joinConversationAState";
 import { LeaveConversationAction } from "../ActionStates/leaveConversationAState";
 import { ClientAPI } from "@panoptyk/client";
 import { TurnInQuestAction } from "../ActionStates/turnInQuestAState";
+import { log, LOGTYPE } from "../../Shared/Utility";
 
 export class TurnInQuestBState extends BehaviorState {
 
@@ -40,9 +41,13 @@ export class TurnInQuestBState extends BehaviorState {
     }
 
     async act() {
-        await super.act();
+        log.info(
+            `[${this.constructor.name}] CurrentActionState: ${this.currentActionState.constructor.name}`,
+            LOGTYPE.STATE
+        );
         this._success = this.currentActionState === SuccessAction.instance;
         this._fail = this.currentActionState === FailureAction.instance;
+        await super.act();
     }
 
     static TurnInQuestTransition(

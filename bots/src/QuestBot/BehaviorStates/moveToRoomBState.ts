@@ -10,6 +10,7 @@ import {
 } from "../../Shared/HSM";
 import { defaultKB as KB, roomMap } from "../../Shared/KnowledgeBase";
 import { MoveToRoomAction } from "../ActionStates/moveToRoomAState";
+import { log, LOGTYPE } from "../../Shared/Utility";
 
 export class MoveToRoomBState extends BehaviorState {
 
@@ -45,6 +46,10 @@ export class MoveToRoomBState extends BehaviorState {
 
 
     async act() {
+        log.info(
+            `[${this.constructor.name}] CurrentActionState: ${this.currentActionState.constructor.name}`,
+            LOGTYPE.STATE
+        );
         this._success = ClientAPI.playerAgent.room === this._dest;
         this._fail = this.currentActionState === FailureAction.instance;
         if (this.complete) {
