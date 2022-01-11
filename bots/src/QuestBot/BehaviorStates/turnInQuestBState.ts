@@ -104,7 +104,7 @@ export class TurnInQuestBState extends BehaviorState {
                 return new JoinConversationAction(
                     KB.getFactionLeader(),
                     5000,
-                    GetQuestBState.JoinConversationTransition(behavior)
+                    TurnInQuestBState.JoinConversationTransition(behavior)
                 );
             }
             else if (this._fail) {

@@ -17,12 +17,18 @@ export class QuestStrategy extends Strategy {
         if (this.currentBehavior === IdleBState.instance) {
             let room: Room;
 
-            if (KB.isQuestAvailable() && KB.isTurnInInfo()) {
+            if (KB.isQuestAvailable() && !KB.isTurnInInfo()) {
+                room = QuestStrategy.getRandomRoom();
+            }
+            else {
+                room = room = KB.lastSeen(KB.getFactionLeader());
+            }
+        /*    if (KB.isQuestAvailable() && KB.isTurnInInfo()) {
                 room = KB.lastSeen(KB.getFactionLeader());
             }
             else {
                 room = QuestStrategy.getRandomRoom();
-            }
+            } */
             
             this.currentBehavior = new MoveToRoomBState(
                 room,

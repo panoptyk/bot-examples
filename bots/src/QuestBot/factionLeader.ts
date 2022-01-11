@@ -1,5 +1,7 @@
 import { ClientAPI } from "@panoptyk/client";
-import { Room, Faction, Agent, Util } from "@panoptyk/core";
+import { Room, Faction, Agent, Util, Query, Info } from "@panoptyk/core";
+import { defaultKB as KB, roomMap } from "../Shared/KnowledgeBase";
+import { log, LOGTYPE } from "../Shared/Utility";
 // Usage: npx ts-node botTemplate.ts <username> <password> <server_ip>
 
 // #region Boilerplate_setup
@@ -17,6 +19,14 @@ function init() {
     console.log("Logging in as: " + username + " to server: " + address);
     logger.silence();
     address ? ClientAPI.init(address) : ClientAPI.init();
+
+    ClientAPI.addOnUpdateListener((updates) => {
+        updates.Information.forEach(info => {
+            if ((info.getTerms(true).agent) && (info.getTerms(true).agent as any)._agentName === "questTarget") {
+                KB.collectInfo(info);
+            }
+        });
+    });
     attemptLogin();
 
 }
@@ -62,11 +72,56 @@ function actWrapper() {
 // #endregion
 // set "_endBot" to true to exit the script cleanly
 
+function verifyQuestReceiver(receiver: Agent) {
+    return receiver && receiver.factions[0]?.id === ClientAPI.playerAgent.factions[0].id;
+}
+
+async function giveQuest() {
+    let receiver;
+    let giver = ClientAPI.playerAgent;
+
+    for (let other of ClientAPI.playerAgent.room.occupants) {
+        if (other !== giver && verifyQuestReceiver(other)) {
+            receiver = other;
+            break;
+        }
+    }
+
+    if (ClientAPI.canAct()) {
+        if (ClientAPI.playerAgent.questionsAsked.length > 0) {
+            const questionAsked = ClientAPI.playerAgent.getLatestQuestionAsked();
+
+            if (receiver) {
+                await ClientAPI.giveQuest(giver, receiver, questionAsked.id)
+                .then(_ => {
+                    log.info(`Agent ${giver} assigned agent ${receiver} with query quest ${questionAsked}`, LOGTYPE.ACT);
+                })
+                .catch(error => {
+                    console.log(error);
+                    console.log(`error assigning quest:\n ${JSON.stringify(error)}`);
+                });
+            }
+        }
+        else {
+            const info = KB.getTurnInInfo();
+            let terms = info.getTerms(true);
+            terms.roomB = undefined;
+
+            await ClientAPI.askQuestion(terms, terms.action)
+            .then(_ => {
+                log.info(`query is created`, LOGTYPE.ACT);
+            })
+            .catch(error => {
+                console.log(`error creating query:\n ${JSON.stringify(error)}`);
+            });
+        }
+    }
+}
+
 async function act() {
-    console.log(ClientAPI.playerAgent.room);
-    if (ClientAPI.playerAgent.conversation) {
-        console.log("assigning quest");
-        // assign quest 
+    // assign quest 
+    if (ClientAPI.playerAgent.conversation && ClientAPI.playerAgent.conversation.participants.length >= 2) {
+        giveQuest();
     }
     else if (ClientAPI.playerAgent.conversationRequesters.length > 0) {
         await ClientAPI.acceptConversation(

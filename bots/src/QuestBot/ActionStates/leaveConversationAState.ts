@@ -15,11 +15,14 @@ export class LeaveConversationAction extends RetryActionState {
     async act() {
         this._success = this._success || !ClientAPI.playerAgent.conversation;
 
-        await ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation)
+        if (this._fail) {
+            await ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation)
             .then(res => log.info(`Agent ${ClientAPI.playerAgent} left conversation`, LOGTYPE.ACT))
             .catch(error => {
                 console.log(`error leaving conversation:\n ${JSON.stringify(error)}`);
             });
+        }
+        
     }
 
     public nextState(): ActionState {

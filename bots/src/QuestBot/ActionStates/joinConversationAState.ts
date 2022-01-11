@@ -23,16 +23,19 @@ export class JoinConversationAction extends RetryActionState {
             !KB.isAgentInRoom(this._target) ||
             !this._target.conversation;
 
-        if (!this._requested) {
+        if (!this._requested && !this._success) {
             await ClientAPI.requestConversation(this._target)
                 .then(res => {
                     log.info(`Agent ${ClientAPI.playerAgent} requested conversation with agent ${this._target}`, LOGTYPE.ACT);
                     this._requested = true;
+                    this._success = true;
                 })
                 .catch(error => {
                     console.log(`error joining conversation:\n ${JSON.stringify(error)}`);
                 });
         }
+        
+        
     }
 
     public nextState(): ActionState {
