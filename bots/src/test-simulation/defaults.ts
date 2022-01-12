@@ -1,0 +1,1 @@
+export const DEFAULT_RETRY_TIME = 3000; // Try to perform a server action for 3 seconds

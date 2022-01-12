@@ -1,5 +1,4 @@
 import { ActionState } from "./actionState"
-import { FailureAction } from "./failureAState";
 import { log, LOGTYPE } from "../../Utility";
 
 export abstract class RetryActionState extends ActionState {
@@ -13,13 +12,12 @@ export abstract class RetryActionState extends ActionState {
       super(nextState);
       this._timeOut = timeOut;
     }
-  
+
     async tick() {
-      if (this._timeOut && Date.now() - this.startTime > this._timeOut) {
-        log.info("> TimedOut", LOGTYPE.STATE);
-        return FailureAction.instance;
+      if (!this.complete && this._timeOut && Date.now() - this.startTime > this._timeOut) {
+        log.info("> timeout reached; state failed", LOGTYPE.STATE);
+        this._fail = true;
       }
-      return await super.tick();
+      return super.tick();
     }
-  
   }
