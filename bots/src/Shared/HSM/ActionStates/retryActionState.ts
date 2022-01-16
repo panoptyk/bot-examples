@@ -18,6 +18,6 @@ export abstract class RetryActionState extends ActionState {
         log.info("> timeout reached; state failed", LOGTYPE.STATE);
         this._fail = true;
       }
-      return super.tick();
+      return await super.tick();
     }
   }
